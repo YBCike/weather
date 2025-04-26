@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实时天气 - 和风天气</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .weather-widget {
+            max-width: 400px;
+            margin: 50px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .weather-widget h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #333;
+        }
+        .weather-widget .temp {
+            font-size: 48px;
+            color: #007BFF;
+        }
+        .weather-widget .details {
+            margin-top: 15px;
+            font-size: 16px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="weather-widget">
+        <h1 id="city">城市: 加载中...</h1>
+        <p class="temp" id="temperature">温度: --°C</p>
+        <div class="details" id="details">
+            <p>天气: --</p>
+            <p>湿度: --%</p>
+            <p>风力: -- 级</p>
+        </div>
+        <p id="update-time" style="font-size: 12px; color: #999;">更新时间: --</p>
+    </div>
+
+    <script>
+        async function fetchWeather() {
+            try {
+                const response = await fetch('http://127.0.0.1:5000/api/weather');
+                const data = await response.json();
+
+                if (data.error) {
+                    document.getElementById('city').textContent = "城市: 数据获取失败";
+                    document.getElementById('details').textContent = data.error;
+                } else {
+                    document.getElementById('city').textContent = `城市: 北京`;
+                    document.getElementById('temperature').textContent = `温度: ${data.temperature}°C`;
+                    document.getElementById('details').innerHTML = `
+                        <p>天气: ${data.condition}</p>
+                        <p>湿度: ${data.humidity}%</p>
+                        <p>风力: ${data.wind} 级</p>
+                    `;
+                    document.getElementById('update-time').textContent = `更新时间: ${data.update_time}`;
+                }
+            } catch (error) {
+                document.getElementById('city').textContent = "城市: 数据获取失败";
+                document.getElementById('details').textContent = error.message;
+            }
+        }
+
+        // 页面加载时获取天气数据
+        fetchWeather();
+    </script>
+</body>
+</html>
